@@ -13,6 +13,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^1.1.4",
+    "cors": "^2.8.5",
     "typescript": "^4.5.5",
     "vite": "^2.7.13"
   },

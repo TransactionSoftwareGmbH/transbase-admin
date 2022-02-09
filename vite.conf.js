@@ -7,10 +7,10 @@ export default defineConfig({
     target: "esnext",
     minify: false,
   },
-  server: {
-    proxy: {
-      // string shorthand
-      "/api": "http://localhost:3003/api",
-    },
-  },
+  // TODO: has no effect?
+  // server: {
+  //   proxy: {
+  //     "/api": "http://localhost:3003",
+  //   },
+  // },
 });

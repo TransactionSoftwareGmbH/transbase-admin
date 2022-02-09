@@ -17,7 +17,7 @@ import { fetchUtils, DataProvider } from "ra-core";
  * @example
  */
 export default (
-  apiUrl = "/api",
+  apiUrl = "http://localhost:3003/api",
   httpClient = fetchUtils.fetchJson,
   countHeader = "Content-Range"
 ): DataProvider & {
@@ -25,11 +25,16 @@ export default (
 } => ({
   introspect: () => {
     const url = `${apiUrl}/system/tables`;
-    return httpClient(url).then<any>(({ json }) => json);
+    return httpClient(url).then<any>(({ json }) => ({ data: json }));
   },
+  executeQuery: (sql: string) =>
+    httpClient(`${apiUrl}/sql`, {
+      method: "POST",
+      body: JSON.stringify({ sql }),
+    }).then(({ json }) => json),
   getSchema: (resource) => {
     const url = `${apiUrl}/${resource}/schema`;
-    return httpClient(url).then<any>(({ json }) => json);
+    return httpClient(url).then<any>(({ json }) => ({ data: json }));
   },
   getList: (resource, params) => {
     const { page, perPage } = params.pagination;
@@ -61,7 +66,7 @@ export default (
         );
       }
       return {
-        data: json,
+        data: json.map((it, index) => ({ id: index, ...it })),
         total:
           countHeader === "Content-Range"
             ? parseInt(headers.get("content-range").split("/").pop(), 10)
