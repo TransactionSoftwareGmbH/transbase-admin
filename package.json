@@ -7,6 +7,7 @@
   "dependencies": {
     "@transaction/transbase-nodejs": "^0.0.8",
     "express": "^4.17.2",
+    "jsonwebtoken": "^8.5.1",
     "react": "^17.0.2",
     "react-admin": "^3.19.7",
     "react-dom": "^17.0.2"

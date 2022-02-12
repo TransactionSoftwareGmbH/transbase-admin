@@ -1,18 +1,31 @@
 import React from "react";
-import { AdminUI, Resource, useDataProvider } from "react-admin";
+import {
+  AdminUI,
+  AppBar,
+  Layout,
+  Resource,
+  useAuthState,
+  useDataProvider,
+} from "react-admin";
 import { ResourceTable } from "./List";
 import { SqlQuery } from "./SqlQuery";
 import Code from "@material-ui/icons/Code";
+import Typography from "@material-ui/core/Typography";
+import Box from "@material-ui/core/Box";
 
 export function Resources() {
+  const { authenticated, loaded } = useAuthState();
   const provider = useDataProvider();
   const [resources, setResources] = React.useState<any[]>([]);
   React.useEffect(() => {
-    provider.introspect().then(({ data }) => setResources(data));
-  }, []);
+    console.log(loaded, authenticated);
+    if (loaded && authenticated) {
+      provider.introspect().then(({ data }) => setResources(data));
+    }
+  }, [loaded, authenticated]);
 
   return (
-    <AdminUI>
+    <AdminUI layout={AdminLayout}>
       {/* <Resource name="users" list={ResourceTable} /> */}
       <Resource icon={Code} name="sql" list={SqlQuery} />
       {resources.map(({ tname: name }) => (
@@ -26,3 +39,16 @@ export function Resources() {
     </AdminUI>
   );
 }
+
+// TODO
+const MyAppBar = (props) => (
+  <AppBar {...props}>
+    <Box flex="1">
+      <Typography variant="h6" id="react-admin-title">
+        Transbase Admin
+      </Typography>
+    </Box>
+  </AppBar>
+);
+
+const AdminLayout = (props) => <Layout {...props} appBar={MyAppBar} />;

@@ -1,6 +1,20 @@
 import { stringify } from "query-string";
 import { fetchUtils, DataProvider } from "ra-core";
 
+const authHttpClient = (url: string, options: fetchUtils.Options = {}) => {
+  if (!options.headers) {
+    options.headers = new Headers({ Accept: "application/json" });
+  }
+  const token = localStorage.getItem("token");
+  if (token) {
+    (options.headers as unknown as Map<string, string>).set(
+      "Authorization",
+      `Bearer ${token}`
+    );
+  }
+  return fetchUtils.fetchJson(url, options);
+};
+
 /**
  * Maps react-admin queries to a simple REST API
  *
@@ -18,7 +32,7 @@ import { fetchUtils, DataProvider } from "ra-core";
  */
 export default (
   apiUrl = "http://localhost:3003/api",
-  httpClient = fetchUtils.fetchJson,
+  httpClient = authHttpClient,
   countHeader = "Content-Range"
 ): DataProvider & {
   getSchema: (resource) => Promise<[{ name: string; type: string }]>;
