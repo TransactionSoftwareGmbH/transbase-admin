@@ -1,0 +1,13 @@
+{
+  "name": "transbase-admin-client",
+  "dependencies": {
+    "react": "^17.0.2",
+    "react-admin": "^3.19.7",
+    "react-dom": "^17.0.2"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^1.1.4",
+    "typescript": "^4.5.5",
+    "vite": "^2.7.13"
+  }
+}

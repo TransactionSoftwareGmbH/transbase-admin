@@ -4,6 +4,7 @@ import { AdminContext } from "react-admin";
 import restProvider from "./provider/api";
 import authProvider from "./provider/auth";
 import { Resources } from "./Resource/Resources";
+import "./app.css";
 
 render(
   <AdminContext authProvider={authProvider} dataProvider={restProvider()}>

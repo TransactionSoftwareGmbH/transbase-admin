@@ -28,7 +28,7 @@ export function Resources() {
     <AdminUI layout={AdminLayout}>
       {/* <Resource name="users" list={ResourceTable} /> */}
       <Resource icon={Code} name="sql" list={SqlQuery} />
-      {resources.map(({ tname: name }) => (
+      {resources.map(({ name }) => (
         <Resource
           intent="registration"
           key={name}
