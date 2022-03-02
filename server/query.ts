@@ -1,4 +1,5 @@
 export default {
+  systemDatabase: () => `select distinct database_name from sysdatabases`,
   systemTable: () => `select * from systable`,
   systemUser: () => `select * from sysuser`,
   // TODO: there is surely a better way

@@ -7,11 +7,12 @@ import {
   useAuthState,
   useDataProvider,
 } from "react-admin";
-import { ResourceTable } from "./List";
+import { ResourceTable } from "./Table";
 import { SqlQuery } from "./SqlQuery";
 import Code from "@material-ui/icons/Code";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
+import { DatabaseList } from "./Database";
 
 export function Resources() {
   const { authenticated, loaded } = useAuthState();
@@ -27,6 +28,7 @@ export function Resources() {
   return (
     <AdminUI layout={AdminLayout}>
       {/* <Resource name="users" list={ResourceTable} /> */}
+      <Resource name="databases" list={DatabaseList} />
       <Resource icon={Code} name="sql" list={SqlQuery} />
       {resources.map(({ name }) => (
         <Resource

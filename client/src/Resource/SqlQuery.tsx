@@ -1,6 +1,6 @@
 import React from "react";
 import { Button, useDataProvider, List } from "react-admin";
-import { ResultSet } from "./List";
+import { ResultSet } from "./Table";
 
 export function SqlQuery(props) {
   const provider = useDataProvider();

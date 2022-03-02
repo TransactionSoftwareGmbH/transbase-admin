@@ -4,9 +4,19 @@ import Query from "./query";
 export class Resolver {
   constructor(private db: Transbase) {}
 
+  getDatabases() {
+    return this.db
+      .query<{ database_name: string }>(Query.systemDatabase())
+      .toArray()
+      .map((it) => ({
+        name: it.database_name,
+        id: it.database_name,
+      }));
+  }
+
   getTableNames() {
     return this.db
-      .query<{ ttype: "r"; tname: string }>(Query.systemTable())!
+      .query<{ ttype: "r"; tname: string }>(Query.systemTable())
       .toArray()
       .filter((it) => it.ttype === "r")
       .map((it) => ({ name: it.tname }));

@@ -1,4 +1,5 @@
 import express from "express";
+import type { Response } from "express";
 
 import cors from "cors"; // TODO only for local dev
 
@@ -6,7 +7,8 @@ import { Transbase } from "@transaction/transbase-nodejs";
 import { authenticateToken, generateAccessToken } from "./auth";
 import { Resolver } from "./resolver";
 
-const URL = "//develop.transaction.de:8324/test"; // TODO make configurable
+// const URL = "//develop.transaction.de:8324/test"; // TODO make configurable
+const URL = "//localhost:2024/admin";
 
 const withAuth = authenticateToken((req, config) => {
   req.db = new Transbase(config);
@@ -57,6 +59,14 @@ app.get("/api/:table/schema", withAuth, (req, res) => {
 });
 
 /**
+ * GET all databases
+ */
+app.get("/api/databases", withAuth, (req, res) => {
+  const data = req.resolver.getDatabases();
+  sendWithContentRange(res, data);
+});
+
+/**
  * GET all table names
  */
 app.get("/api/system/tables", withAuth, (req, res) => {
@@ -84,14 +94,18 @@ app.post("/api/sql", withAuth, (req, res) => {
  */
 app.get("/api/:resourceId", withAuth, (req, res) => {
   const data = req.resolver.getTableResource(req.params.resourceId);
-  res.set("Content-Range", String(data.length));
-  res.set("Access-Control-Expose-Headers", "Content-Range");
-  res.send(data);
+  sendWithContentRange(res, data);
 });
 
 app.listen(3003, () =>
   console.log("🚀 transbase-admin server listening on port 3003")
 );
+
+function sendWithContentRange(res: Response, data: unknown[]) {
+  res.set("Content-Range", String(data.length));
+  res.set("Access-Control-Expose-Headers", "Content-Range");
+  res.send(data);
+}
 
 // ts-types overwrites
 declare module "express" {
