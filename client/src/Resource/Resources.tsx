@@ -13,6 +13,8 @@ import Code from "@material-ui/icons/Code";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import { DatabaseList } from "./Database";
+import Login from "../Layout/Login";
+import { theme } from "../Layout/theme";
 
 export function Resources() {
   const { authenticated, loaded } = useAuthState();
@@ -26,7 +28,7 @@ export function Resources() {
   }, [loaded, authenticated]);
 
   return (
-    <AdminUI layout={AdminLayout}>
+    <AdminUI theme={theme} layout={AdminLayout} loginPage={Login}>
       {/* <Resource name="users" list={ResourceTable} /> */}
       <Resource name="databases" list={DatabaseList} />
       <Resource icon={Code} name="sql" list={SqlQuery} />

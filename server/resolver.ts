@@ -5,13 +5,17 @@ export class Resolver {
   constructor(private db: Transbase) {}
 
   getDatabases() {
-    return this.db
-      .query<{ database_name: string }>(Query.systemDatabase())
-      .toArray()
-      .map((it) => ({
-        name: it.database_name,
-        id: it.database_name,
-      }));
+    try {
+      return this.db
+        .query<{ database_name: string }>(Query.systemDatabase())
+        .toArray()
+        .map((it) => ({
+          name: it.database_name,
+          id: it.database_name,
+        }));
+    } catch (e) {
+      return [];
+    }
   }
 
   getTableNames() {

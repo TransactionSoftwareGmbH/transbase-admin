@@ -27,11 +27,11 @@ app.use(cors());
  * POST login
  */
 app.post("/auth/login", (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, connection = URL } = req.body;
   let db;
   try {
     const data = {
-      url: URL,
+      url: connection,
       user: username,
       password: password,
     };
