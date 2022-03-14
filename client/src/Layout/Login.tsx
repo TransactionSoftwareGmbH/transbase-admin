@@ -16,13 +16,7 @@ import { createTheme, makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import { ThemeProvider } from "@material-ui/styles";
 import LockIcon from "@material-ui/icons/Lock";
-import {
-  Notification,
-  useTranslate,
-  useLogin,
-  useNotify,
-  TextFieldProps,
-} from "react-admin";
+import { Notification, useTranslate, useLogin, useNotify } from "react-admin";
 import { theme } from "./theme";
 
 const useStyles = makeStyles((theme) => ({
@@ -32,7 +26,6 @@ const useStyles = makeStyles((theme) => ({
     minHeight: "100vh",
     alignItems: "center",
     justifyItems: "center",
-    justifyContent: "flex-start",
     background:
       "url(https://www.transaction.de/fileadmin/_processed_/6/0/csm_Flex_Consulting_5f33a2cdc1.jpg)",
     backgroundRepeat: "no-repeat",
@@ -40,7 +33,8 @@ const useStyles = makeStyles((theme) => ({
   },
   card: {
     minWidth: 300,
-    marginTop: "6em",
+    marginTop: "auto",
+    marginBottom: "auto",
   },
   avatar: {
     margin: "1em",
@@ -48,13 +42,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
   },
   icon: {
-    // backgroundColor: theme.palette.secondary.main,
-  },
-  hint: {
-    marginTop: "1em",
-    display: "flex",
-    justifyContent: "center",
-    // color: theme.palette.grey[500],
+    backgroundColor: theme.palette.secondary.main,
   },
   form: {
     padding: "0 1em 1em 1em",
@@ -214,10 +202,8 @@ Login.propTypes = {
 // We need to put the ThemeProvider decoration in another component
 // Because otherwise the useStyles() hook used in Login won't get
 // the right theme
-const LoginWithTheme = (props: any) => (
+export const TransbaseLogin = (props: any) => (
   <ThemeProvider theme={createTheme(theme)}>
     <Login {...props} />
   </ThemeProvider>
 );
-
-export default LoginWithTheme;

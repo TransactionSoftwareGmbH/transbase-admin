@@ -1,9 +1,10 @@
 import React from "react";
 import { Button, useDataProvider, List } from "react-admin";
-import { ResultSet } from "./Table";
+import { TransbaseDataProvider } from "../provider/api";
+import { ResultSet } from "./ResultSet";
 
 export function SqlQuery(props) {
-  const provider = useDataProvider();
+  const provider = useDataProvider<TransbaseDataProvider>();
 
   const [query, setQuery] = React.useState("");
   const [sql, setSql] = React.useState("");

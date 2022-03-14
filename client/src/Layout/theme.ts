@@ -23,4 +23,10 @@ const dark = {
 export const theme = {
   ...defaultTheme,
   palette: window.matchMedia(`(prefers-color-scheme: dark)`) ? light : light,
+  props: {
+    MuiInputLabel: {
+      shrink: true,
+    },
+    ...defaultTheme.props,
+  },
 };

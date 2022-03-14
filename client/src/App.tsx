@@ -1,19 +1,19 @@
 import * as React from "react";
 import { render } from "react-dom";
-import { AdminContext, Login } from "react-admin";
-import restProvider from "./provider/api";
-import authProvider from "./provider/auth";
-import { Resources } from "./Resource/Resources";
-import "./app.css";
+import { AdminContext } from "react-admin";
+import { dataProvider } from "./provider/api";
+import { authProvider } from "./provider/auth";
 import { theme } from "./Layout/theme";
+import { TransbaseAdmin } from "./TransbaseAdmin";
+import "./app.css";
 
 render(
   <AdminContext
     theme={theme}
     authProvider={authProvider}
-    dataProvider={restProvider()}
+    dataProvider={dataProvider()}
   >
-    <Resources />
+    <TransbaseAdmin />
   </AdminContext>,
   document.getElementById("root")
 );

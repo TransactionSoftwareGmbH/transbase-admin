@@ -30,13 +30,11 @@ const authHttpClient = (url: string, options: fetchUtils.Options = {}) => {
  *
  * @example
  */
-export default (
+export const dataProvider = (
   apiUrl = "http://localhost:3003/api",
   httpClient = authHttpClient,
   countHeader = "Content-Range"
-): DataProvider & {
-  getSchema: (resource) => Promise<[{ name: string; type: string }]>;
-} => ({
+) => ({
   introspect: () => {
     const url = `${apiUrl}/system/tables`;
     return httpClient(url).then<any>(({ json }) => ({ data: json }));
@@ -192,3 +190,6 @@ export default (
       data: responses.map(({ json }) => json.id),
     })),
 });
+
+export type TransbaseDataProvider = DataProvider &
+  ReturnType<typeof dataProvider>;

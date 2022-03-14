@@ -1,11 +1,13 @@
 import React from "react";
 import {
-  Datagrid,
   List,
-  NumberField,
-  TextField,
+  useAuthState,
+  useCheckAuth,
   useDataProvider,
+  useGetIdentity,
 } from "react-admin";
+import { TransbaseDataProvider } from "../provider/api";
+import { ResultSet } from "./ResultSet";
 
 export const ResourceTable = (props) => (
   <List {...props}>
@@ -14,7 +16,7 @@ export const ResourceTable = (props) => (
 );
 
 function Table({ name }: { name: string }) {
-  const provider = useDataProvider();
+  const provider = useDataProvider<TransbaseDataProvider>();
   const [schema, setSchema] = React.useState<any[]>();
   React.useEffect(() => {
     provider.getSchema(name).then(({ data }) => setSchema(data));
@@ -23,21 +25,17 @@ function Table({ name }: { name: string }) {
   return <ResultSet schema={schema} />;
 }
 
-export function ResultSet({ schema }) {
-  if (!schema) {
-    return null;
-  }
-  return (
-    <Datagrid>
-      {schema.map(({ name, typeName }) => {
-        switch (typeName) {
-          case "INTEGER":
-            return <NumberField key={name} source={name} />;
-          case "VARCHAR":
-          default:
-            return <TextField key={name} source={name} />;
-        }
-      })}
-    </Datagrid>
-  );
+export function useTableIntrospect() {
+  // FIXME: why is this not called after login??
+  const { authenticated, loaded } = useAuthState();
+  const provider = useDataProvider<TransbaseDataProvider>();
+  const [tables, setTables] = React.useState<any[]>([]);
+  React.useEffect(() => {
+    console.log({ loaded, authenticated });
+    if (loaded && authenticated) {
+      console.log("authenticated");
+      provider.introspect().then(({ data }) => setTables(data));
+    }
+  }, [loaded, authenticated]);
+  return { tables };
 }
