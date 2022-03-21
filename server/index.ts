@@ -96,6 +96,10 @@ app.get("/api/:resourceId", withAuth, (req, res) => {
   const data = req.resolver.getTableResource(req.params.resourceId);
   sendWithContentRange(res, data);
 });
+app.post("/api/:resourceId", withAuth, (req, res) => {
+  req.resolver.insertInto(req.params.resourceId, req.body);
+  res.sendStatus(200);
+});
 
 app.listen(3003, () =>
   console.log("🚀 transbase-admin server listening on port 3003")

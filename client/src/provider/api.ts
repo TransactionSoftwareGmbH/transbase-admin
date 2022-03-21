@@ -164,7 +164,10 @@ export const dataProvider = (
       method: "POST",
       body: JSON.stringify(params.data),
     }).then(({ json }) => ({
-      data: { ...params.data, id: json.id },
+      data: {
+        ...params.data,
+        id: json?.id || -1, // TODO return new id
+      },
     })),
 
   delete: (resource, params) =>

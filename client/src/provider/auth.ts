@@ -2,7 +2,7 @@ import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_CHECK, AUTH_ERROR } from "react-admin";
 
 export const authProvider = (type, params) => {
   if (type === AUTH_LOGIN) {
-    const { username, password, connection } = params;
+    const { username, password = "", connection } = params;
     return fetch("http://localhost:3003/auth/login", {
       method: "POST",
       body: JSON.stringify({ username, password, connection }),

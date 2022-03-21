@@ -121,9 +121,9 @@ const Login = () => {
     if (!values.username) {
       errors.username = translate("ra.validation.required");
     }
-    if (!values.password) {
-      errors.password = translate("ra.validation.required");
-    }
+    // if (!values.password) {
+    //   errors.password = translate("ra.validation.required");
+    // }
     return errors;
   };
 

@@ -34,6 +34,10 @@ export class Resolver {
     return this.db.query(Query.selectAllFrom(table)).toArray();
   }
 
+  insertInto(table: string, data: { [col: string]: string | number }) {
+    return this.db.query<number>(Query.insertIntoTable(table, data));
+  }
+
   executeQuery(sql: string) {
     const result = this.db.query(sql);
     const data =
