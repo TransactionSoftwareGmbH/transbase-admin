@@ -10,6 +10,7 @@ import {
   TextInput,
   useAuthState,
   useDataProvider,
+  useResourceDefinition,
 } from "react-admin";
 import { TransbaseDataProvider } from "../provider/api";
 import { ResultSet } from "./ResultSet";
@@ -26,37 +27,39 @@ export function TableResource({ name }: { name: string }) {
   );
 }
 
-function Table(props) {
+function Table() {
   return (
-    <List {...props}>
-      <TableData name={props.resource} />
+    <List>
+      <TableData />
     </List>
   );
 }
 
-function TableData({ name }: { name: string }) {
+function TableData() {
+  const { name } = useResourceDefinition();
   const schema = useSchema(name);
   return <ResultSet schema={schema} />;
 }
 
-function CreateRow(props) {
+function CreateRow() {
   return (
-    <Create {...props}>
-      <TableFields {...props} />
+    <Create>
+      <TableFields />
     </Create>
   );
 }
 
-function EditRow(props) {
+function EditRow() {
   return (
-    <Edit {...props}>
-      <TableFields {...props} />
+    <Edit>
+      <TableFields />
     </Edit>
   );
 }
 
-function TableFields(props: { resource: string }) {
-  const schema = useSchema(props.resource);
+function TableFields() {
+  const { name } = useResourceDefinition();
+  const schema = useSchema(name);
   return <SimpleForm>{schema?.map(Field)}</SimpleForm>;
 }
 
@@ -85,13 +88,13 @@ function useSchema(name: string) {
 
 export function useTableIntrospect() {
   // FIXME: why is this not called after login??
-  const { authenticated, loaded } = useAuthState();
+  const { authenticated } = useAuthState();
   const provider = useDataProvider<TransbaseDataProvider>();
   const [tables, setTables] = React.useState<any[]>([]);
   React.useEffect(() => {
-    if (loaded && authenticated) {
+    if (authenticated) {
       provider.introspect().then(({ data }) => setTables(data));
     }
-  }, [loaded, authenticated]);
+  }, [authenticated]);
   return { tables };
 }

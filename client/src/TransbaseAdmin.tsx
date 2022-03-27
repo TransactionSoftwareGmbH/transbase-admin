@@ -4,7 +4,7 @@ import { theme } from "./Layout/theme";
 import { TransbaseLogin } from "./Layout/Login";
 import { AdminUI, Resource } from "react-admin";
 import { DatabaseList } from "./Resource/Database";
-import Code from "@material-ui/icons/Code";
+import Code from "@mui/icons-material/Code";
 import { TableResource, useTableIntrospect } from "./Resource/Table";
 import { SqlQuery } from "./Resource/SqlQuery";
 

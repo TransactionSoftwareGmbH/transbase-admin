@@ -6,7 +6,7 @@ import {
   TextField,
   useRecordContext,
 } from "react-admin";
-import OpenInNew from "@material-ui/icons/OpenInNew";
+import OpenInNew from "@mui/icons-material/OpenInNew";
 
 export function DatabaseList(props) {
   return (
