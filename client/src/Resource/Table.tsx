@@ -2,8 +2,10 @@ import React from "react";
 import {
   Create,
   DateInput,
+  Edit,
   List,
   NumberInput,
+  Resource,
   SimpleForm,
   TextInput,
   useAuthState,
@@ -12,24 +14,50 @@ import {
 import { TransbaseDataProvider } from "../provider/api";
 import { ResultSet } from "./ResultSet";
 
-export const ResourceTable = (props) => (
-  <List {...props}>
-    <Table name={props.resource} />
-  </List>
-);
+export function TableResource({ name }: { name: string }) {
+  return (
+    <Resource
+      key={name}
+      name={name}
+      list={Table}
+      create={CreateRow}
+      edit={EditRow}
+    />
+  );
+}
 
-function Table({ name }: { name: string }) {
+function Table(props) {
+  return (
+    <List {...props}>
+      <TableData name={props.resource} />
+    </List>
+  );
+}
+
+function TableData({ name }: { name: string }) {
   const schema = useSchema(name);
   return <ResultSet schema={schema} />;
 }
 
-export function CreateRow(props) {
-  const schema = useSchema(props.resource);
+function CreateRow(props) {
   return (
     <Create {...props}>
-      <SimpleForm>{schema?.map(Field)}</SimpleForm>
+      <TableFields {...props} />
     </Create>
   );
+}
+
+function EditRow(props) {
+  return (
+    <Edit {...props}>
+      <TableFields {...props} />
+    </Edit>
+  );
+}
+
+function TableFields(props: { resource: string }) {
+  const schema = useSchema(props.resource);
+  return <SimpleForm>{schema?.map(Field)}</SimpleForm>;
 }
 
 function Field({ name, typeName }: { name: string; typeName: string }) {
@@ -61,9 +89,7 @@ export function useTableIntrospect() {
   const provider = useDataProvider<TransbaseDataProvider>();
   const [tables, setTables] = React.useState<any[]>([]);
   React.useEffect(() => {
-    console.log({ loaded, authenticated });
     if (loaded && authenticated) {
-      console.log("authenticated");
       provider.introspect().then(({ data }) => setTables(data));
     }
   }, [loaded, authenticated]);

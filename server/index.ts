@@ -90,14 +90,24 @@ app.post("/api/sql", withAuth, (req, res) => {
 });
 
 /**
- * GET generic table as resource
+ * get table data (select * from <tableName>)
  */
-app.get("/api/:resourceId", withAuth, (req, res) => {
-  const data = req.resolver.getTableResource(req.params.resourceId);
+app.get("/api/:tableName", withAuth, (req, res) => {
+  const data = req.resolver.getTableResource(req.params.tableName);
   sendWithContentRange(res, data);
 });
-app.post("/api/:resourceId", withAuth, (req, res) => {
-  req.resolver.insertInto(req.params.resourceId, req.body);
+/**
+ * create new table row (insert into <tableName>)
+ */
+app.post("/api/:tableName", withAuth, (req, res) => {
+  req.resolver.insertInto(req.params.tableName, req.body);
+  res.sendStatus(200);
+});
+/**
+ * update table row (update <tablename>)
+ */
+app.put("/api/:tableName/:id", withAuth, (req, res) => {
+  req.resolver.update(req.params.tableName, req.params.id, req.body);
   res.sendStatus(200);
 });
 

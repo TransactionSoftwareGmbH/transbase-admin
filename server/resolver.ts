@@ -38,6 +38,14 @@ export class Resolver {
     return this.db.query<number>(Query.insertIntoTable(table, data));
   }
 
+  update(
+    table: string,
+    primaryKey: string,
+    data: { [col: string]: string | number }
+  ) {
+    return this.db.query<number>(Query.updateTableRow(table, primaryKey, data));
+  }
+
   executeQuery(sql: string) {
     const result = this.db.query(sql);
     const data =
