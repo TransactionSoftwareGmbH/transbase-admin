@@ -6,6 +6,7 @@ import cors from "cors"; // TODO only for local dev
 import { Transbase } from "@transaction/transbase-nodejs";
 import { authenticateToken, generateAccessToken } from "./auth";
 import { Resolver } from "./resolver";
+import { parsePrimaryKey } from "./utils";
 
 // const URL = "//develop.transaction.de:8324/test"; // TODO make configurable
 const URL = "//localhost:2024/admin";
@@ -93,22 +94,46 @@ app.post("/api/sql", withAuth, (req, res) => {
  * get table data (select * from <tableName>)
  */
 app.get("/api/:tableName", withAuth, (req, res) => {
-  const data = req.resolver.getTableResource(req.params.tableName);
+  const data = req.resolver.getMany(req.params.tableName);
   sendWithContentRange(res, data);
+});
+/**
+ * get one table row by primary key
+ */
+app.get("/api/:tableName/:primaryKeyParam", withAuth, (req, res) => {
+  const row = req.resolver.getOne(
+    req.params.tableName,
+    parsePrimaryKey(req.params.primaryKeyParam)
+  );
+  res.send(row);
 });
 /**
  * create new table row (insert into <tableName>)
  */
 app.post("/api/:tableName", withAuth, (req, res) => {
-  req.resolver.insertInto(req.params.tableName, req.body);
-  res.sendStatus(200);
+  const created = req.resolver.createRow(req.params.tableName, req.body);
+  res.send(created);
 });
 /**
  * update table row (update <tablename>)
  */
-app.put("/api/:tableName/:id", withAuth, (req, res) => {
-  req.resolver.update(req.params.tableName, req.params.id, req.body);
-  res.sendStatus(200);
+app.put("/api/:tableName/:primaryKeyParam", withAuth, (req, res) => {
+  req.resolver.updateRow(
+    req.params.tableName,
+    parsePrimaryKey(req.params.primaryKeyParam),
+    req.body
+  );
+  res.send({ id: req.params.primaryKeyParam });
+});
+/**
+ * delete table row (delete from <tablename>)
+ */
+app.delete("/api/:tableName/:primaryKeyParam", withAuth, (req, res) => {
+  req.resolver.deleteRow(
+    req.params.tableName,
+    parsePrimaryKey(req.params.primaryKeyParam)
+  );
+  res.send({ id: req.params.primaryKeyParam });
 });
 
 app.listen(3003, () =>

@@ -1,5 +1,6 @@
 import type { Transbase } from "@transaction/transbase-nodejs";
-import Query from "./query";
+import Query, { ColData } from "./query";
+import { parsePrimaryKey } from "./utils";
 
 export class Resolver {
   constructor(private db: Transbase) {}
@@ -27,23 +28,46 @@ export class Resolver {
   }
 
   getTableSchema(table: string) {
-    return this.db.query(Query.tableSchema(table)).getColumns();
+    const colInfo = this.db.query(Query.tableSchema(table)).getColumns();
+    const keys = this.db
+      .query<{ cname: string }>(Query.getPrimaryKey(table))
+      .toArray();
+    return { columns: colInfo, primaryKey: keys.map((it) => it.cname) };
   }
 
-  getTableResource(table: string) {
-    return this.db.query(Query.selectAllFrom(table)).toArray();
+  getMany(table: string) {
+    return this.db
+      .query<ColData>(Query.selectAllFrom(table))
+      .toArray()
+      .map((row) => ({ ...row, ...this.getId(table, row) }));
   }
 
-  insertInto(table: string, data: { [col: string]: string | number }) {
-    return this.db.query<number>(Query.insertIntoTable(table, data));
+  getOne(table: string, primaryKey: ColData) {
+    return this.db
+      .query<ColData>(Query.selectOne(table, primaryKey))
+      .toArray()
+      .map((row) => ({ ...row, ...this.getId(table, row) }))[0];
   }
 
-  update(
-    table: string,
-    primaryKey: string,
-    data: { [col: string]: string | number }
-  ) {
+  createRow(table: string, data: ColData) {
+    this.db.query<number>(Query.insertIntoTable(table, data));
+    const primaryKey = parsePrimaryKey(this.getId(table, data).id);
+    try {
+      if (primaryKey) {
+        return this.getOne(table, primaryKey);
+      }
+    } catch (e) {
+      console.error(e);
+      return { ...data, id: primaryKey };
+    }
+  }
+
+  updateRow(table: string, primaryKey: ColData, data: ColData) {
     return this.db.query<number>(Query.updateTableRow(table, primaryKey, data));
+  }
+
+  deleteRow(table: string, primaryKey: ColData) {
+    return this.db.query<number>(Query.deleteTableRow(table, primaryKey));
   }
 
   executeQuery(sql: string) {
@@ -54,6 +78,17 @@ export class Resolver {
       schema: result.getColumns(),
       data,
       length: typeof data === "number" ? 0 : data.length,
+    };
+  }
+
+  getId(table: string, data: ColData) {
+    const keys = this.db
+      .query<{ cname: string }>(Query.getPrimaryKey(table))
+      .toArray()
+      .map((it) => it.cname);
+    return {
+      ...("id" in data ? { _id: data.id } : undefined),
+      id: keys.map((key) => `${key}=${data[key]}`).join("&"),
     };
   }
 }

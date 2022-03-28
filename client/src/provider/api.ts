@@ -78,7 +78,10 @@ export const dataProvider = (
         );
       }
       return {
-        data: json.map((it, index) => ({ id: index, ...it })),
+        data: json.map((it, index) => ({
+          ...it,
+          ...("id" in it ? undefined : { id: index }),
+        })),
         total:
           countHeader === "Content-Range"
             ? parseInt(headers.get("content-range").split("/").pop(), 10)
@@ -166,7 +169,7 @@ export const dataProvider = (
     }).then(({ json }) => ({
       data: {
         ...params.data,
-        id: json?.id || -1, // TODO return new id
+        ...json,
       },
     })),
 

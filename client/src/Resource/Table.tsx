@@ -37,6 +37,7 @@ function Table() {
 
 function TableData() {
   const { name } = useResourceDefinition();
+  console.log("name", name);
   const schema = useSchema(name);
   return <ResultSet schema={schema} />;
 }
@@ -60,7 +61,7 @@ function EditRow() {
 function TableFields() {
   const { name } = useResourceDefinition();
   const schema = useSchema(name);
-  return <SimpleForm>{schema?.map(Field)}</SimpleForm>;
+  return <SimpleForm>{schema?.columns?.map(Field)}</SimpleForm>;
 }
 
 function Field({ name, typeName }: { name: string; typeName: string }) {
@@ -79,10 +80,15 @@ function Field({ name, typeName }: { name: string; typeName: string }) {
 
 function useSchema(name: string) {
   const provider = useDataProvider<TransbaseDataProvider>();
-  const [schema, setSchema] = React.useState<any[]>();
+  const [schema, setSchema] = React.useState<{
+    columns: Array<{ name; typeName }>;
+    primaryKey: string[];
+  }>();
   React.useEffect(() => {
-    provider.getSchema(name).then(({ data }) => setSchema(data));
-  }, []);
+    if (name) {
+      provider.getSchema(name).then(({ data }) => setSchema(data));
+    }
+  }, [name]);
   return schema;
 }
 
