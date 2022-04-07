@@ -1,25 +1,17 @@
-import React from "react";
-import { TransbaseAdminLayout } from "./Layout/Layout";
-import { theme } from "./Layout/theme";
-import { TransbaseLogin } from "./Layout/Login";
-import { AdminUI, Resource } from "react-admin";
-import { DatabaseList } from "./Resource/Database";
 import Code from "@mui/icons-material/Code";
-import { TableResource, useTableIntrospect } from "./Resource/Table";
+import React from "react";
+import { Resource } from "react-admin";
+import { dataProvider } from "./provider/api";
+import { DatabaseList } from "./Resource/Database";
 import { SqlQuery } from "./Resource/SqlQuery";
+import { TableResource } from "./Resource/Table";
 
-export function TransbaseAdmin() {
-  const { tables } = useTableIntrospect();
-  return (
-    <AdminUI
-      theme={theme}
-      layout={TransbaseAdminLayout}
-      loginPage={TransbaseLogin}
-    >
-      {/* <Resource name="users" list={ResourceTable} /> */}
-      <Resource name="databases" list={DatabaseList} />
-      {tables.map(TableResource)}
-      <Resource icon={Code} name="sql" list={SqlQuery} />
-    </AdminUI>
-  );
+export async function fetchTransbaseAdminResources() {
+  const provider = dataProvider();
+  const tables = await provider.introspect().then((it) => it.data);
+  return [
+    <Resource name="databases" list={DatabaseList} />,
+    ...tables.map(TableResource),
+    <Resource icon={Code} name="sql" list={SqlQuery} />,
+  ];
 }

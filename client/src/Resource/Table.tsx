@@ -10,6 +10,7 @@ import {
   TextInput,
   useAuthState,
   useDataProvider,
+  useGetIdentity,
   useResourceDefinition,
 } from "react-admin";
 import { TransbaseDataProvider } from "../provider/api";
@@ -37,7 +38,6 @@ function Table() {
 
 function TableData() {
   const { name } = useResourceDefinition();
-  console.log("name", name);
   const schema = useSchema(name);
   return <ResultSet schema={schema} />;
 }
@@ -94,13 +94,17 @@ function useSchema(name: string) {
 
 export function useTableIntrospect() {
   // FIXME: why is this not called after login??
-  const { authenticated } = useAuthState();
+  const { authenticated, isLoading } = useAuthState();
+  const re = useGetIdentity();
+  console.log(re);
+  const ready = authenticated && !isLoading;
   const provider = useDataProvider<TransbaseDataProvider>();
   const [tables, setTables] = React.useState<any[]>([]);
   React.useEffect(() => {
-    if (authenticated) {
-      provider.introspect().then(({ data }) => setTables(data));
+    //console.log("fetch", authenticated, isLoading);
+    if (ready) {
+      provider.introspect().then((result) => setTables(result?.data || []));
     }
-  }, [authenticated]);
-  return { tables };
+  }, [ready]);
+  return { tables, authenticated, isLoading };
 }

@@ -27,7 +27,7 @@ app.use(cors());
 /**
  * POST login
  */
-app.post("/auth/login", (req, res) => {
+app.post("/auth", (req, res) => {
   const { username, password, connection = URL } = req.body;
   let db;
   try {
@@ -50,6 +50,10 @@ app.post("/auth/login", (req, res) => {
       console.error(e);
     }
   }
+});
+
+app.get("/auth", withAuth, (req, res) => {
+  res.sendStatus(200);
 });
 
 /**

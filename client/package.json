@@ -2,7 +2,7 @@
   "name": "transbase-admin-client",
   "dependencies": {
     "react": "^17.0.2",
-    "react-admin": "^4.0.0-beta.3",
+    "react-admin": "^4.0.0-rc.1",
     "react-dom": "^17.0.2"
   },
   "devDependencies": {
