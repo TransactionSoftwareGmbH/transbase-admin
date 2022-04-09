@@ -7,7 +7,7 @@ export function ResultSet({ schema }) {
   }
   return (
     <Datagrid>
-      {schema?.columns?.map(({ name, typeName }) => {
+      {schema?.columns.map(({ name, typeName }) => {
         switch (typeName) {
           case "INTEGER":
             return <NumberField key={name} source={name} />;

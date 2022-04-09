@@ -39,6 +39,10 @@ export const dataProvider = (
     const url = `${apiUrl}/system/tables`;
     return httpClient(url).then<any>(({ json }) => ({ data: json }));
   },
+  getColumnSchemaByTableNames: () => {
+    const url = `${apiUrl}/system/columns`;
+    return httpClient(url).then<any>(({ json }) => ({ data: json }));
+  },
   executeQuery: (sql: string) =>
     httpClient(`${apiUrl}/sql`, {
       method: "POST",

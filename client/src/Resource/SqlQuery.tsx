@@ -1,50 +1,74 @@
 import React from "react";
-import { Button, useDataProvider, List } from "react-admin";
+import { useDataProvider, List, Button } from "react-admin";
 import { TransbaseDataProvider } from "../provider/api";
+import Typography from "@mui/material/Typography";
 import { ResultSet } from "./ResultSet";
 import { EditorState, EditorView, basicSetup } from "@codemirror/basic-setup";
 import { sql as sqlLang } from "@codemirror/lang-sql";
+import RunCircle from "@mui/icons-material/RunCircle";
 
-export function SqlQuery(props) {
+export function SqlQuery({ schema }) {
   const provider = useDataProvider<TransbaseDataProvider>();
+
+  const [colSchema, setColSchema] = React.useState();
+  React.useEffect(() => {
+    provider
+      .getColumnSchemaByTableNames()
+      .then(({ data }) => setColSchema(data));
+  }, []);
+
   const ref = React.useRef<HTMLDivElement>();
+  const [querySchema, setQuerySchema] = React.useState();
   const [sqlQuery, setSqlQuery] = React.useState("");
-  const [schema, setSchema] = React.useState();
   const editor = React.useMemo(() => {
-    return new EditorView({
-      state: EditorState.create({
-        extensions: [basicSetup, sqlLang()],
-      }),
-      parent: ref.current!,
-    });
-  }, [ref.current]);
+    if (colSchema && ref.current) {
+      return new EditorView({
+        state: EditorState.create({
+          extensions: [
+            basicSetup,
+            sqlLang({
+              upperCaseKeywords: true,
+              schema: colSchema,
+            }),
+          ],
+        }),
+
+        parent: ref.current!,
+      });
+    }
+    return null;
+  }, [ref.current, colSchema]);
 
   async function execute() {
     const query = editor.state.doc.toString();
     setSqlQuery(query);
     const result = await provider.executeQuery(query);
-    setSchema(result.schema);
+    setQuerySchema(result.schema);
   }
 
   return (
-    <>
+    <div className="RaLayout-content sql">
+      <Typography marginTop={"8px"} variant="h6">
+        SQL Editor
+      </Typography>
       <div id="editor" ref={ref} />
       <Button
         // disabled={!editor.state.doc.length}
+        icon={<RunCircle />}
         label="Run"
         onClick={execute}
       />
-      {schema && sqlQuery && (
-        <QueryResultTable {...props} sql={sqlQuery} schema={schema} />
+      {querySchema && sqlQuery && (
+        <QueryResultTable sql={sqlQuery} schema={querySchema} />
       )}
-    </>
+    </div>
   );
 }
 
-function QueryResultTable(props) {
+function QueryResultTable({ sql, schema }) {
   return (
-    <List {...props} resource="sql" filter={{ sql: props.sql }}>
-      <ResultSet schema={props.schema} />
+    <List filter={{ sql }}>
+      <ResultSet schema={schema} />
     </List>
   );
 }

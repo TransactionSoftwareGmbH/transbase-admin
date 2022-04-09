@@ -8,10 +8,10 @@ import { TableResource } from "./Resource/Table";
 
 export async function fetchTransbaseAdminResources() {
   const provider = dataProvider();
-  const tables = await provider.introspect().then((it) => it.data);
+  const schema = await provider.introspect().then((it) => it.data);
   return [
     <Resource name="databases" list={DatabaseList} />,
-    ...tables.map(TableResource),
+    ...schema.map(TableResource),
     <Resource icon={Code} name="sql" list={SqlQuery} />,
   ];
 }

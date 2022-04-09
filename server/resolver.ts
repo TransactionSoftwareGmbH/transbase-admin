@@ -27,6 +27,25 @@ export class Resolver {
       .map((it) => ({ name: it.tname }));
   }
 
+  getColumnNames() {
+    return Object.fromEntries(
+      this.db
+        .query<{ tname: string; cname: string; ctype: string }>(
+          Query.systemColumns()
+        )
+        .toArray()
+        .reduce((map, { tname, cname }) => {
+          const key = tname.toLowerCase();
+          if (!map.has(key)) {
+            map.set(key, []);
+          }
+          map.get(key)!.push(cname);
+          return map;
+        }, new Map<string, string[]>())
+        .entries()
+    );
+  }
+
   getTableSchema(table: string) {
     const colInfo = this.db.query(Query.tableSchema(table)).getColumns();
     const keys = this.db
@@ -75,7 +94,7 @@ export class Resolver {
     const data =
       typeof result === "number" ? (result as number) : result.toArray();
     return {
-      schema: result.getColumns(),
+      schema: { columns: result.getColumns() },
       data,
       length: typeof data === "number" ? 0 : data.length,
     };

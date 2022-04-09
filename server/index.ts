@@ -79,6 +79,13 @@ app.get("/api/system/tables", withAuth, (req, res) => {
 });
 
 /**
+ * GET column names and type grouped by table names
+ */
+app.get("/api/system/columns", withAuth, (req, res) => {
+  res.send(req.resolver.getColumnNames());
+});
+
+/**
  * GET/POST Run arbitrary sql query
  */
 app.get("/api/sql", withAuth, (req, res) => {

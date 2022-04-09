@@ -2,6 +2,8 @@ export default {
   systemDatabase: () => `select distinct database_name from sysdatabases`,
   systemTable: () => `select * from systable`,
   systemUser: () => `select * from sysuser`,
+  systemColumns: () =>
+    `select cname, tname from systable t join syscolumn c on c.tsegno=t.segno where ttype ='r'`,
   // TODO: better extract from syscolumn?
   tableSchema: (table: string) => `select * from "${table}" where 1=0 FIRST(0)`,
   selectAllFrom: (table: string) => `select * from "${table}"`,
