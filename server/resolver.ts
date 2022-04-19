@@ -90,14 +90,21 @@ export class Resolver {
   }
 
   executeQuery(sql: string) {
-    const result = this.db.query(sql);
-    const data =
-      typeof result === "number" ? (result as number) : result.toArray();
-    return {
-      schema: { columns: result.getColumns() },
-      data,
-      length: typeof data === "number" ? 0 : data.length,
-    };
+    try {
+      const result = this.db.query(sql);
+      const data =
+        typeof result === "number" ? (result as number) : result.toArray();
+      return {
+        schema: { columns: result.getColumns() },
+        data,
+        length: typeof data === "number" ? 0 : data.length,
+      };
+    } catch (e: any) {
+      // TODO: extend transbase-nodejs if we need sqlcode, tci error code...
+      return {
+        error: e.message,
+      };
+    }
   }
 
   getId(table: string, data: ColData) {

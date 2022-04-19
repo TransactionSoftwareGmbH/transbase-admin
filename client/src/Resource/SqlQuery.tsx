@@ -2,12 +2,13 @@ import React from "react";
 import { useDataProvider, List, Button } from "react-admin";
 import { TransbaseDataProvider } from "../provider/api";
 import Typography from "@mui/material/Typography";
+import Alert from "@mui/material/Alert";
 import { ResultSet } from "./ResultSet";
 import { EditorState, EditorView, basicSetup } from "@codemirror/basic-setup";
 import { sql as sqlLang } from "@codemirror/lang-sql";
 import RunCircle from "@mui/icons-material/RunCircle";
 
-export function SqlQuery({ schema }) {
+export function SqlQuery() {
   const provider = useDataProvider<TransbaseDataProvider>();
 
   const [colSchema, setColSchema] = React.useState();
@@ -18,7 +19,10 @@ export function SqlQuery({ schema }) {
   }, []);
 
   const ref = React.useRef<HTMLDivElement>();
-  const [querySchema, setQuerySchema] = React.useState();
+  const [queryResult, setQueryResult] = React.useState<{
+    schema?: any;
+    error?: any;
+  }>();
   const [sqlQuery, setSqlQuery] = React.useState("");
   const editor = React.useMemo(() => {
     if (colSchema && ref.current) {
@@ -42,8 +46,12 @@ export function SqlQuery({ schema }) {
   async function execute() {
     const query = editor.state.doc.toString();
     setSqlQuery(query);
-    const result = await provider.executeQuery(query);
-    setQuerySchema(result.schema);
+    try {
+      const result = await provider.executeQuery(query);
+      setQueryResult(result);
+    } catch (e) {
+      setQueryResult(e.body);
+    }
   }
 
   return (
@@ -58,8 +66,13 @@ export function SqlQuery({ schema }) {
         label="Run"
         onClick={execute}
       />
-      {querySchema && sqlQuery && (
-        <QueryResultTable sql={sqlQuery} schema={querySchema} />
+      {queryResult && sqlQuery && queryResult.schema && (
+        <QueryResultTable sql={sqlQuery} schema={queryResult.schema} />
+      )}
+      {queryResult && sqlQuery && queryResult.error && (
+        <Alert severity="error">
+          <pre className="sql-error">{queryResult.error}</pre>
+        </Alert>
       )}
     </div>
   );

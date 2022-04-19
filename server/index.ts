@@ -93,12 +93,21 @@ app.get("/api/sql", withAuth, (req, res) => {
     decodeURIComponent((req.query as { filter: string }).filter)
   ).sql;
   const result = req.resolver.executeQuery(sql);
-  res.set("Content-Range", String(result.length));
-  res.set("Access-Control-Expose-Headers", "Content-Range");
-  res.send(result.data);
+  if (result.error) {
+    res.status(500).send(result);
+  } else {
+    res.set("Content-Range", String(result.length));
+    res.set("Access-Control-Expose-Headers", "Content-Range");
+    res.send(result.data);
+  }
 });
 app.post("/api/sql", withAuth, (req, res) => {
-  res.send(req.resolver.executeQuery(req.body.sql));
+  const result = req.resolver.executeQuery(req.body.sql);
+  if (result.error) {
+    res.status(500).send(result);
+  } else {
+    res.send(result);
+  }
 });
 
 /**
