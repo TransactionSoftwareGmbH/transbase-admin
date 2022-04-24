@@ -1,5 +1,5 @@
 import type { Transbase } from "@transaction/transbase-nodejs";
-import Query, { ColData } from "./query";
+import Query, { ColData, QueryParams } from "./query";
 import { parsePrimaryKey } from "./utils";
 
 export class Resolver {
@@ -54,9 +54,16 @@ export class Resolver {
     return { columns: colInfo, primaryKey: keys.map((it) => it.cname) };
   }
 
-  getMany(table: string) {
+  getMany(table: string, params: QueryParams) {
+    if (params?.sort?.[0] == "id") {
+      // TODO
+      params.sort[0] = this.db
+        .query<{ cname: string }>(Query.getPrimaryKey(table))
+        .toArray()
+        .map((it) => it.cname)[0];
+    }
     return this.db
-      .query<ColData>(Query.selectAllFrom(table))
+      .query<ColData>(Query.selectAllFrom(table, params))
       .toArray()
       .map((row) => ({ ...row, ...this.getId(table, row) }));
   }

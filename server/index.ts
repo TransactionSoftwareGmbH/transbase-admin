@@ -114,7 +114,10 @@ app.post("/api/sql", withAuth, (req, res) => {
  * get table data (select * from <tableName>)
  */
 app.get("/api/:tableName", withAuth, (req, res) => {
-  const data = req.resolver.getMany(req.params.tableName);
+  const data = req.resolver.getMany(
+    req.params.tableName,
+    parseQuery(req.query)
+  );
   sendWithContentRange(res, data);
 });
 /**
@@ -164,6 +167,15 @@ function sendWithContentRange(res: Response, data: unknown[]) {
   res.set("Content-Range", String(data.length));
   res.set("Access-Control-Expose-Headers", "Content-Range");
   res.send(data);
+}
+
+function parseQuery(query: any) {
+  return Object.fromEntries(
+    Object.entries(query).map(([key, value]) => [
+      key,
+      typeof value === "string" ? JSON.parse(value) : value,
+    ])
+  );
 }
 
 // ts-types overwrites
