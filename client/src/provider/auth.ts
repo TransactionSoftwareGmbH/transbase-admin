@@ -1,8 +1,7 @@
-import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_CHECK, AUTH_ERROR } from "react-admin";
+import { AuthProvider } from "react-admin";
 
-export const authProvider = (type, params) => {
-  if (type === AUTH_LOGIN) {
-    const { username, password = "", connection } = params;
+export const authProvider: AuthProvider = {
+  login: ({ username, password = "", connection }) => {
     return fetch("http://localhost:3003/auth", {
       method: "POST",
       body: JSON.stringify({ username, password, connection }),
@@ -16,23 +15,24 @@ export const authProvider = (type, params) => {
       })
       .then((token) => {
         localStorage.setItem("token", token);
+        localStorage.setItem("user", username);
       });
-  }
-  if (type === AUTH_LOGOUT) {
+  },
+  logout: () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
     return Promise.resolve();
-  }
-  if (type === AUTH_ERROR) {
-    const status = params.status;
+  },
+  checkError: ({ status }) => {
     if (status === 401 || status === 403) {
       localStorage.removeItem("token");
+      localStorage.removeItem("user");
       return Promise.reject();
     }
     return Promise.resolve();
-  }
-  if (type === AUTH_CHECK) {
-    const token = localStorage.getItem("token");
-    if (!token) {
+  },
+  checkAuth: () => {
+    if (!localStorage.getItem("token")) {
       return Promise.reject();
     }
     return fetch("http://localhost:3003/auth", {
@@ -43,8 +43,17 @@ export const authProvider = (type, params) => {
         localStorage.removeItem("token");
         throw new Error(response.statusText);
       }
-      return true;
+      Promise.resolve();
     });
-  }
-  return Promise.resolve();
+  },
+  getPermissions: () => {
+    const role = localStorage.getItem("role");
+    return Promise.resolve(role);
+  },
+  getIdentity: () => {
+    return Promise.resolve({
+      id: localStorage.getItem("user")!,
+      fullName: localStorage.getItem("user")!,
+    });
+  },
 };

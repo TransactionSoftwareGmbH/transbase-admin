@@ -1,5 +1,6 @@
 import { stringify } from "query-string";
 import { fetchUtils, DataProvider } from "ra-core";
+import { ColumnNamesByTable, TableSchema } from "../types";
 
 const authHttpClient = (url: string, options: fetchUtils.Options = {}) => {
   if (!options.headers) {
@@ -18,8 +19,6 @@ const authHttpClient = (url: string, options: fetchUtils.Options = {}) => {
 /**
  * Maps react-admin queries to a simple REST API
  *
- * This REST dialect is similar to the one of FakeRest
- *
  * @example
  * getList     => GET http://my.api.url/posts?sort=['title','ASC']&range=[0, 24]
  * getOne      => GET http://my.api.url/posts/123
@@ -27,31 +26,34 @@ const authHttpClient = (url: string, options: fetchUtils.Options = {}) => {
  * update      => PUT http://my.api.url/posts/123
  * create      => POST http://my.api.url/posts
  * delete      => DELETE http://my.api.url/posts/123
- *
- * @example
  */
-export const dataProvider = (
+export const dataProvider: (
+  url?: string,
+  client?: typeof authHttpClient,
+  countHeader?: string
+) => TransbaseDataProvider = (
   apiUrl = "http://localhost:3003/api",
   httpClient = authHttpClient,
   countHeader = "Content-Range"
 ) => ({
   introspect: () => {
     const url = `${apiUrl}/system/tables`;
-    return httpClient(url).then<any>(({ json }) => ({ data: json }));
+    return httpClient(url).then<any>(({ json }: any) => ({ data: json }));
   },
   getColumnSchemaByTableNames: () => {
     const url = `${apiUrl}/system/columns`;
-    return httpClient(url).then<any>(({ json }) => ({ data: json }));
+    return httpClient(url).then<any>(({ json }: any) => ({ data: json }));
   },
   executeQuery: (sql: string) =>
     httpClient(`${apiUrl}/sql`, {
       method: "POST",
       body: JSON.stringify({ sql }),
-    }).then(({ json }) => json),
-  getSchema: (resource) => {
+    }).then(({ json }: any) => json),
+  getSchema: (resource: string) => {
     const url = `${apiUrl}/${resource}/schema`;
-    return httpClient(url).then<any>(({ json }) => ({ data: json }));
+    return httpClient(url).then<any>(({ json }: any) => ({ data: json }));
   },
+  // resource DataProvider
   getList: (resource, params) => {
     const { page, perPage } = params.pagination;
     const { field, order } = params.sort;
@@ -82,14 +84,11 @@ export const dataProvider = (
         );
       }
       return {
-        data: json.map((it, index) => ({
+        data: json.map((it: any, index: number) => ({
           ...it,
           ...("id" in it ? undefined : { id: index }),
         })),
-        total:
-          countHeader === "Content-Range"
-            ? parseInt(headers.get("content-range").split("/").pop(), 10)
-            : parseInt(headers.get(countHeader.toLowerCase())),
+        total: getTotal(countHeader, headers),
       };
     });
   },
@@ -141,10 +140,7 @@ export const dataProvider = (
       }
       return {
         data: json,
-        total:
-          countHeader === "Content-Range"
-            ? parseInt(headers.get("content-range").split("/").pop(), 10)
-            : parseInt(headers.get(countHeader.toLowerCase())),
+        total: getTotal(countHeader, headers),
       };
     });
   },
@@ -201,5 +197,16 @@ export const dataProvider = (
     })),
 });
 
-export type TransbaseDataProvider = DataProvider &
-  ReturnType<typeof dataProvider>;
+function getTotal(countHeader: string, headers: Headers): number {
+  return countHeader === "Content-Range"
+    ? parseInt(headers.get("content-range")!.split("/").pop() || "0", 10)
+    : parseInt(headers.get(countHeader.toLowerCase()) || "0");
+}
+export type TransbaseDataProvider = DataProvider & {
+  introspect: () => Promise<{ data: string[] }>;
+  getColumnSchemaByTableNames: () => Promise<{ data: ColumnNamesByTable }>;
+  executeQuery: (
+    sql: string
+  ) => Promise<{ schema: TableSchema; data: any[]; length: number }>;
+  getSchema: (tableName: string) => Promise<{ data: TableSchema }>;
+};

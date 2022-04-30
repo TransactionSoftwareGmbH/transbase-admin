@@ -1,7 +1,8 @@
 import React from "react";
 import { Datagrid, NumberField, TextField } from "react-admin";
+import { TableSchema } from "../types";
 
-export function ResultSet({ schema }) {
+export function ResultSet({ schema }: { schema?: TableSchema }) {
   if (!schema) {
     return null;
   }

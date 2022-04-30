@@ -7,18 +7,19 @@ import { ResultSet } from "./ResultSet";
 import { EditorState, EditorView, basicSetup } from "@codemirror/basic-setup";
 import { sql as sqlLang } from "@codemirror/lang-sql";
 import RunCircle from "@mui/icons-material/RunCircle";
+import { ColumnNamesByTable, TableSchema } from "../types";
 
 export function SqlQuery() {
   const provider = useDataProvider<TransbaseDataProvider>();
 
-  const [colSchema, setColSchema] = React.useState();
+  const [colSchema, setColSchema] = React.useState<ColumnNamesByTable>();
   React.useEffect(() => {
     provider
       .getColumnSchemaByTableNames()
       .then(({ data }) => setColSchema(data));
   }, []);
 
-  const ref = React.useRef<HTMLDivElement>();
+  const ref = React.useRef<HTMLDivElement>(null);
   const [queryResult, setQueryResult] = React.useState<{
     schema?: any;
     error?: any;
@@ -44,12 +45,15 @@ export function SqlQuery() {
   }, [ref.current, colSchema]);
 
   async function execute() {
+    if (!editor) {
+      return;
+    }
     const query = editor.state.doc.toString();
     setSqlQuery(query);
     try {
       const result = await provider.executeQuery(query);
       setQueryResult(result);
-    } catch (e) {
+    } catch (e: any) {
       setQueryResult(e.body);
     }
   }
@@ -78,7 +82,13 @@ export function SqlQuery() {
   );
 }
 
-function QueryResultTable({ sql, schema }) {
+function QueryResultTable({
+  sql,
+  schema,
+}: {
+  sql: string;
+  schema: TableSchema;
+}) {
   return (
     <List filter={{ sql }}>
       <ResultSet schema={schema} />

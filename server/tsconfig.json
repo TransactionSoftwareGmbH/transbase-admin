@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "skipLibCheck": true,
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "noEmit": true,
+    "strict": true,
+    "resolveJsonModule": true,
+    "forceConsistentCasingInFileNames": true,
+    "noUnusedParameters": true,
+    "noUnusedLocals": true,
+    "noFallthroughCasesInSwitch": true,
+    "incremental": true
+  },
+  "exclude": ["node_modules", "build", "dist"]
+}

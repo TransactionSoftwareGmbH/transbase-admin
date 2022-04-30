@@ -1,9 +1,9 @@
 import React from "react";
-import { AppBar } from "react-admin";
+import { AppBar, AppBarProps } from "react-admin";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 
-export function TransbaseAppBar(props) {
+export function TransbaseAppBar(props: AppBarProps) {
   return (
     <AppBar {...props}>
       <Box flex="1">

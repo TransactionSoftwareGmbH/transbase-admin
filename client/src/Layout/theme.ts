@@ -1,4 +1,4 @@
-import { defaultTheme } from "react-admin";
+import { defaultTheme, RaThemeOptions } from "react-admin";
 
 const light = {
   type: "light" as "light",
@@ -20,12 +20,14 @@ const dark = {
   },
 };
 
-export const theme = {
+export const theme: RaThemeOptions = {
   ...defaultTheme,
-  palette: window.matchMedia(`(prefers-color-scheme: dark)`) ? light : light,
+  palette: window.matchMedia(`(prefers-color-scheme: dark)`).matches
+    ? dark
+    : light,
   components: {
     MuiInputLabel: {
-      shrink: true,
+      defaultProps: { shrink: true },
     },
     ...defaultTheme.components,
   },

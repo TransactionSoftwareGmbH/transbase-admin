@@ -14,6 +14,7 @@ import {
   useResourceDefinition,
 } from "react-admin";
 import { TransbaseDataProvider } from "../provider/api";
+import { TableSchema } from "../types";
 import { ResultSet } from "./ResultSet";
 
 export function TableResource({ name }: { name: string }) {
@@ -80,10 +81,7 @@ function Field({ name, typeName }: { name: string; typeName: string }) {
 
 function useSchema(name: string) {
   const provider = useDataProvider<TransbaseDataProvider>();
-  const [schema, setSchema] = React.useState<{
-    columns: Array<{ name; typeName }>;
-    primaryKey: string[];
-  }>();
+  const [schema, setSchema] = React.useState<TableSchema>();
   React.useEffect(() => {
     if (name) {
       provider.getSchema(name).then(({ data }) => setSchema(data));
@@ -93,7 +91,6 @@ function useSchema(name: string) {
 }
 
 export function useTableIntrospect() {
-  // FIXME: why is this not called after login??
   const { authenticated, isLoading } = useAuthState();
   const re = useGetIdentity();
   console.log(re);
@@ -101,7 +98,6 @@ export function useTableIntrospect() {
   const provider = useDataProvider<TransbaseDataProvider>();
   const [tables, setTables] = React.useState<any[]>([]);
   React.useEffect(() => {
-    //console.log("fetch", authenticated, isLoading);
     if (ready) {
       provider.introspect().then((result) => setTables(result?.data || []));
     }

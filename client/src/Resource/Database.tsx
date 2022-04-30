@@ -8,9 +8,9 @@ import {
 } from "react-admin";
 import OpenInNew from "@mui/icons-material/OpenInNew";
 
-export function DatabaseList(props) {
+export function DatabaseList() {
   return (
-    <List {...props}>
+    <List>
       <Datagrid>
         <TextField source="name" />
         <Connect />

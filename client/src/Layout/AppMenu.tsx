@@ -1,6 +1,6 @@
 import React from "react";
-import { UserMenu } from "react-admin";
+import { UserMenu, UserMenuProps } from "react-admin";
 
-export function TransbaseAppMenu({ props }) {
+export function TransbaseAppMenu(props: UserMenuProps) {
   return <UserMenu {...props} />;
 }

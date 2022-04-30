@@ -1,9 +1,8 @@
 import React from "react";
-import { Layout } from "react-admin";
+import { Layout, LayoutProps } from "react-admin";
 import { TransbaseAppBar } from "./AppBar";
-import { TransbaseAppMenu } from "./AppMenu";
 
-export function TransbaseAdminLayout(props) {
+export function TransbaseAdminLayout(props: LayoutProps) {
   return (
     <Layout
       {...props}
