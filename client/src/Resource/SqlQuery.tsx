@@ -91,7 +91,7 @@ function QueryResultTable({
 }) {
   return (
     <List filter={{ sql }}>
-      <ResultSet schema={schema} />
+      <ResultSet schema={schema} readOnly={true} />
     </List>
   );
 }

@@ -2,12 +2,18 @@ import React from "react";
 import { Datagrid, NumberField, TextField } from "react-admin";
 import { TableSchema } from "../types";
 
-export function ResultSet({ schema }: { schema?: TableSchema }) {
+export function ResultSet({
+  schema,
+  readOnly = false,
+}: {
+  schema?: TableSchema;
+  readOnly?: boolean;
+}) {
   if (!schema) {
     return null;
   }
   return (
-    <Datagrid>
+    <Datagrid rowClick={readOnly ? undefined : "edit"}>
       {schema?.columns.map(({ name, typeName }) => {
         switch (typeName) {
           case "INTEGER":
