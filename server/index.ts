@@ -52,15 +52,8 @@ app.post("/auth", (req, res) => {
   }
 });
 
-app.get("/auth", withAuth, (req, res) => {
+app.get("/auth", withAuth, (_, res) => {
   res.sendStatus(200);
-});
-
-/**
- * GET column schema of table
- */
-app.get("/api/:table/schema", withAuth, (req, res) => {
-  res.send(req.resolver.getTableSchema(req.params.table));
 });
 
 /**
@@ -111,9 +104,16 @@ app.post("/api/sql", withAuth, (req, res) => {
 });
 
 /**
+ * GET column schema of table
+ */
+app.get("/api/table/:table/schema", withAuth, (req, res) => {
+  res.send(req.resolver.getTableSchema(req.params.table));
+});
+
+/**
  * get table data (select * from <tableName>)
  */
-app.get("/api/:tableName", withAuth, (req, res) => {
+app.get("/api/table/:tableName", withAuth, (req, res) => {
   const data = req.resolver.getMany(
     req.params.tableName,
     parseQuery(req.query)
@@ -123,7 +123,7 @@ app.get("/api/:tableName", withAuth, (req, res) => {
 /**
  * get one table row by primary key
  */
-app.get("/api/:tableName/:primaryKeyParam", withAuth, (req, res) => {
+app.get("/api/table/:tableName/:primaryKeyParam", withAuth, (req, res) => {
   const row = req.resolver.getOne(
     req.params.tableName,
     parsePrimaryKey(req.params.primaryKeyParam)
@@ -133,14 +133,14 @@ app.get("/api/:tableName/:primaryKeyParam", withAuth, (req, res) => {
 /**
  * create new table row (insert into <tableName>)
  */
-app.post("/api/:tableName", withAuth, (req, res) => {
+app.post("/api/table/:tableName", withAuth, (req, res) => {
   const created = req.resolver.createRow(req.params.tableName, req.body);
   res.send(created);
 });
 /**
  * update table row (update <tablename>)
  */
-app.put("/api/:tableName/:primaryKeyParam", withAuth, (req, res) => {
+app.put("/api/table/:tableName/:primaryKeyParam", withAuth, (req, res) => {
   req.resolver.updateRow(
     req.params.tableName,
     parsePrimaryKey(req.params.primaryKeyParam),
@@ -151,7 +151,7 @@ app.put("/api/:tableName/:primaryKeyParam", withAuth, (req, res) => {
 /**
  * delete table row (delete from <tablename>)
  */
-app.delete("/api/:tableName/:primaryKeyParam", withAuth, (req, res) => {
+app.delete("/api/table/:tableName/:primaryKeyParam", withAuth, (req, res) => {
   req.resolver.deleteRow(
     req.params.tableName,
     parsePrimaryKey(req.params.primaryKeyParam)

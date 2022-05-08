@@ -40,31 +40,18 @@ export const TransbaseLogin = () => {
       auth,
       location.state ? (location.state as any).nextPathname : "/"
     ).catch((error: Error) => {
+      const message = typeof error === "string" ? error : error?.message;
       setLoading(false);
-      notify(
-        typeof error === "string"
-          ? error
-          : typeof error === "undefined" || !error.message
-          ? "ra.auth.sign_in_error"
-          : error.message,
-        {
-          type: "warning",
-          messageArgs: {
-            _:
-              typeof error === "string"
-                ? error
-                : error && error.message
-                ? error.message
-                : undefined,
-          },
-        }
-      );
+      notify(message || "ra.auth.sign_in_error", {
+        type: "warning",
+        messageArgs: { _: message },
+      });
     });
   };
 
   const fieldProps = {
     fullWidth: true,
-    InputLabelProps: theme.components.MuiInputLabel,
+    InputLabelProps: theme?.components?.MuiInputLabel?.defaultProps,
     disabled: loading,
   };
 

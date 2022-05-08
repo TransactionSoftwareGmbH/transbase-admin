@@ -203,7 +203,7 @@ function getTotal(countHeader: string, headers: Headers): number {
     : parseInt(headers.get(countHeader.toLowerCase()) || "0");
 }
 export type TransbaseDataProvider = DataProvider & {
-  introspect: () => Promise<{ data: string[] }>;
+  introspect: () => Promise<{ data: Array<{ name: string }> }>;
   getColumnSchemaByTableNames: () => Promise<{ data: ColumnNamesByTable }>;
   executeQuery: (
     sql: string

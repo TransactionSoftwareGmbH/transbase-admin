@@ -16,12 +16,14 @@ import {
 import { TransbaseDataProvider } from "../provider/api";
 import { TableSchema } from "../types";
 import { ResultSet } from "./ResultSet";
+import ViewListOutlined from "@mui/icons-material/ViewListOutlined";
 
 export function TableResource({ name }: { name: string }) {
   return (
     <Resource
       key={name}
-      name={name}
+      name={"table/" + name}
+      options={{ label: name, group: "Table", icon: ViewListOutlined }}
       list={Table}
       create={CreateRow}
       edit={EditRow}

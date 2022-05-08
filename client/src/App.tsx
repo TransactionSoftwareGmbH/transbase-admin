@@ -5,6 +5,7 @@ import { Admin } from "react-admin";
 import { render } from "react-dom";
 import TransbaseMessages from "../i18n/transbase.json";
 import "./app.css";
+import { TransbaseAdminLayout } from "./Layout/Layout";
 import { TransbaseLogin } from "./Layout/Login";
 import { theme } from "./Layout/theme";
 import { dataProvider } from "./provider/api";
@@ -24,6 +25,8 @@ render(
     i18nProvider={i18nProvider}
     loginPage={TransbaseLogin}
     requireAuth={true}
+    layout={TransbaseAdminLayout}
+    disableTelemetry={true}
   >
     {fetchTransbaseAdminResources}
   </Admin>,
