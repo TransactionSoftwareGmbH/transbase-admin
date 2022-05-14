@@ -159,6 +159,13 @@ app.delete("/api/table/:tableName/:primaryKeyParam", withAuth, (req, res) => {
   res.send({ id: req.params.primaryKeyParam });
 });
 
+/*******************************
+ *  USERS
+ ******************************/
+app.get("/api/user", withAuth, (req, res) => {
+  sendWithContentRange(res, req.resolver.getUsers());
+});
+
 app.listen(3003, () =>
   console.log("🚀 transbase-admin server listening on port 3003")
 );

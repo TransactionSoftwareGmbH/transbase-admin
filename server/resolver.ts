@@ -124,4 +124,16 @@ export class Resolver {
       id: keys.map((key) => `${key}=${data[key]}`).join("&"),
     };
   }
+
+  getUsers() {
+    return this.db
+      .query<{
+        passwd: string;
+        userclass: string;
+        userid: number;
+        username: string;
+      }>(Query.systemUser())
+      .toArray()
+      .map(({ userid, ...rest }) => ({ ...rest, id: userid }));
+  }
 }
