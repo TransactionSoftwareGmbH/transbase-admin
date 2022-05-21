@@ -1,4 +1,4 @@
-import type { Transbase } from "@transaction/transbase-nodejs";
+import { Transbase } from "@transaction/transbase-nodejs";
 import Query, { ColData, QueryParams } from "./query";
 import { parsePrimaryKey } from "./utils";
 
@@ -99,12 +99,11 @@ export class Resolver {
   executeQuery(sql: string) {
     try {
       const result = this.db.query(sql);
-      const data =
-        typeof result === "number" ? (result as number) : result.toArray();
+      const data = result && "toArray" in result ? result.toArray() : result;
       return {
-        schema: { columns: result.getColumns() },
+        schema: { columns: result?.getColumns() },
         data,
-        length: typeof data === "number" ? 0 : data.length,
+        length: data instanceof Array ? data?.length : 0,
       };
     } catch (e: any) {
       // TODO: extend transbase-nodejs if we need sqlcode, tci error code...
@@ -127,13 +126,72 @@ export class Resolver {
 
   getUsers() {
     return this.db
-      .query<{
-        passwd: string;
-        userclass: string;
-        userid: number;
-        username: string;
-      }>(Query.systemUser())
+      .query<User>(Query.getUsers())
       .toArray()
       .map(({ userid, ...rest }) => ({ ...rest, id: userid }));
   }
+
+  grantUser(
+    id: number | undefined,
+    name: string,
+    userclass: User["userclass"],
+    password?: string
+  ) {
+    const user =
+      id == null
+        ? this.createUser(name, userclass)
+        : this.updateUser(id, userclass);
+
+    if (password != null) {
+      // TODO: we cannot user hashed passwd here, how to get real old password?
+      this.changePassword(name, user?.passwd || "", password);
+    }
+    return user;
+  }
+
+  private updateUser(id: number, userclass: User["userclass"]) {
+    const user = this.getUser(id);
+    if (user.userclass !== userclass) {
+      this.db.query(Query.revokeGrantUser(user.username, user.userclass));
+      this.db.query(Query.grantUser(user.username, userclass));
+    }
+    return user;
+  }
+
+  private createUser(name: string, userclass: User["userclass"]) {
+    this.db.query(Query.grantUser(name, userclass));
+    return this.getUsers().find(
+      (it) => it.username === name && it.userclass === userclass
+    );
+  }
+
+  getUser(id: number) {
+    const user = this.db.query<User>(Query.getUser(id)).next();
+    return { ...user, id: user.userid };
+  }
+
+  deleteUser(userId: number) {
+    return this.db.query(Query.deleteUser(userId));
+  }
+
+  changePassword(user: string, oldPassword: string, newPassword: string) {
+    new Resolver(
+      new Transbase({
+        url: this.db.getConnectionUrl(),
+        user,
+        password: oldPassword,
+      })
+    ).changePasswordLogedInUser(oldPassword, newPassword);
+  }
+
+  private changePasswordLogedInUser(oldPassword = "", newPassword = "") {
+    this.db.query(Query.alterUserPassword(oldPassword, newPassword));
+  }
+}
+
+interface User {
+  userid: number;
+  username: string;
+  userclass: "dba" | "access" | "resource";
+  passwd: string;
 }

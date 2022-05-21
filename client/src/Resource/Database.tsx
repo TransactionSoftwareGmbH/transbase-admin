@@ -3,12 +3,25 @@ import {
   Button,
   Datagrid,
   List,
+  Resource,
   TextField,
   useRecordContext,
 } from "react-admin";
 import OpenInNew from "@mui/icons-material/OpenInNew";
+import StorageRounded from "@mui/icons-material/StorageRounded";
 
-export function DatabaseList() {
+export function DatabaseResource() {
+  return (
+    <Resource
+      key="database"
+      icon={StorageRounded}
+      name="databases"
+      list={DatabaseList}
+    />
+  );
+}
+
+function DatabaseList() {
   return (
     <List>
       <Datagrid>

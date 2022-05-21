@@ -25,12 +25,8 @@ export function authenticateToken(
       if (err) {
         return res.sendStatus(403);
       }
-      try {
-        callback(req, connectionConfig);
-        next();
-      } catch (e: any) {
-        res.sendStatus(500).send(e.message);
-      }
+      callback(req, connectionConfig);
+      next();
     });
   };
 }

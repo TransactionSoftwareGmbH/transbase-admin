@@ -1,5 +1,5 @@
 import React from "react";
-import { useDataProvider, List, Button } from "react-admin";
+import { useDataProvider, List, Button, Resource } from "react-admin";
 import { TransbaseDataProvider } from "../provider/api";
 import Typography from "@mui/material/Typography";
 import Alert from "@mui/material/Alert";
@@ -8,8 +8,21 @@ import { EditorState, EditorView, basicSetup } from "@codemirror/basic-setup";
 import { sql as sqlLang } from "@codemirror/lang-sql";
 import RunCircle from "@mui/icons-material/RunCircle";
 import { ColumnNamesByTable, TableSchema } from "../types";
+import Terminal from "@mui/icons-material/Terminal";
 
-export function SqlQuery() {
+export function SqlEditorResource() {
+  return (
+    <Resource
+      key="sql"
+      icon={Terminal}
+      name="sql"
+      list={SqlQuery}
+      options={{ singular: true }}
+    />
+  );
+}
+
+function SqlQuery() {
   const provider = useDataProvider<TransbaseDataProvider>();
 
   const [colSchema, setColSchema] = React.useState<ColumnNamesByTable>();

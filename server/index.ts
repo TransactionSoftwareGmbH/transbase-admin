@@ -1,4 +1,4 @@
-import express from "express";
+import express, { ErrorRequestHandler } from "express";
 import type { Response } from "express";
 
 import cors from "cors"; // TODO only for local dev
@@ -165,6 +165,44 @@ app.delete("/api/table/:tableName/:primaryKeyParam", withAuth, (req, res) => {
 app.get("/api/user", withAuth, (req, res) => {
   sendWithContentRange(res, req.resolver.getUsers());
 });
+
+app.get("/api/user/:id", withAuth, (req, res) => {
+  res.send(req.resolver.getUser(Number(req.params.id)));
+});
+
+app.post("/api/user", withAuth, (req, res) => {
+  const { username, userclass, password } = req.body as {
+    username: string;
+    userclass: "dba" | "access" | "resource";
+    password?: string;
+  };
+  res.send(req.resolver.grantUser(undefined, username, userclass, password));
+});
+
+app.put("/api/user/:id", withAuth, (req, res) => {
+  const { username, userclass, password } = req.body as {
+    username: string;
+    userclass: "dba" | "access" | "resource";
+    password?: string;
+  };
+  res.send(
+    req.resolver.grantUser(Number(req.params.id), username, userclass, password)
+  );
+});
+
+app.delete("/api/user/:id", withAuth, (req, res) => {
+  req.resolver.deleteUser(Number(req.params.id));
+  res.send({ id: req.params.id });
+});
+
+const errorHandler: ErrorRequestHandler = (err, _, res, next) => {
+  if (res.headersSent) {
+    return next(err);
+  }
+  res.status(500).send({ message: err.message });
+};
+
+app.use(errorHandler);
 
 app.listen(3003, () =>
   console.log("🚀 transbase-admin server listening on port 3003")

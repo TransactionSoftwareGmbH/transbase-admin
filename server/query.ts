@@ -1,7 +1,16 @@
 export default {
   systemDatabase: () => `select distinct database_name from sysdatabases`,
   systemTable: () => `select * from systable`,
-  systemUser: () => `select * from sysuser`,
+  getUsers: () => `select * from sysuser`,
+  grantUser: (name: string, type: "access" | "resource" | "dba") =>
+    `grant ${type} to "${name}"`,
+  revokeGrantUser: (name: string, type: "access" | "resource" | "dba") =>
+    `revoke ${type} from "${name}"`,
+  deleteUser: (userid: number) =>
+    `delete from sysuser where userid = ${userid}`,
+  alterUserPassword: (oldPassword?: string, newPassword = "") =>
+    `alter password from '${oldPassword}' TO '${newPassword}'`,
+  getUser: (userId: number) => `SELECT * FROM sysuser where userid = ${userId}`,
   systemColumns: () =>
     `select cname, tname from systable t join syscolumn c on c.tsegno=t.segno where ttype ='r'`,
   // TODO: better extract from syscolumn?
