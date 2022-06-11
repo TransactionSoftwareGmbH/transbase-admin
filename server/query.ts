@@ -10,6 +10,8 @@ export default {
     `delete from sysuser where userid = ${userid}`,
   alterUserPassword: (oldPassword?: string, newPassword = "") =>
     `alter password from '${oldPassword}' TO '${newPassword}'`,
+  alterPasswordTo: (user: string, newPassword = "") =>
+    `alter password for ${user} to ${newPassword}`,
   getUser: (userId: number) => `SELECT * FROM sysuser where userid = ${userId}`,
   systemColumns: () =>
     `select cname, tname from systable t join syscolumn c on c.tsegno=t.segno where ttype ='r'`,

@@ -143,8 +143,7 @@ export class Resolver {
         : this.updateUser(id, userclass);
 
     if (password != null) {
-      // TODO: we cannot user hashed passwd here, how to get real old password?
-      this.changePassword(name, user?.passwd || "", password);
+      this.changePassword(name, password);
     }
     return user;
   }
@@ -174,18 +173,8 @@ export class Resolver {
     return this.db.query(Query.deleteUser(userId));
   }
 
-  changePassword(user: string, oldPassword: string, newPassword: string) {
-    new Resolver(
-      new Transbase({
-        url: this.db.getConnectionUrl(),
-        user,
-        password: oldPassword,
-      })
-    ).changePasswordLogedInUser(oldPassword, newPassword);
-  }
-
-  private changePasswordLogedInUser(oldPassword = "", newPassword = "") {
-    this.db.query(Query.alterUserPassword(oldPassword, newPassword));
+  private changePassword(user: string, newPassword = "") {
+    this.db.query(Query.alterUserPassword(user, newPassword));
   }
 }
 
