@@ -8,7 +8,6 @@ import { authenticateToken, generateAccessToken } from "./auth";
 import { Resolver } from "./resolver";
 import { parsePrimaryKey } from "./utils";
 
-// const URL = "//develop.transaction.de:8324/test"; // TODO make configurable
 const URL = "//localhost:2024/admin";
 
 const withAuth = authenticateToken((req, config) => {
@@ -18,7 +17,7 @@ const withAuth = authenticateToken((req, config) => {
 
 const app = express();
 app.use(express.json());
-app.use(express.static("dist"));
+app.use(express.static("../dist"));
 app.use(cors());
 
 /*********************
